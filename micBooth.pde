@@ -6,31 +6,27 @@ import processing.pdf.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 
-/*
-------------------------------------------------------------------------------------------------------
-*/
+/*------------------------------------------------------------------------------------------------------*/
 
-ToxiclibsSupport gfx;
-Minim minim;  
-FFT fftLin;
-AudioInput in;
-BeatDetect beat;
-BeatListener bl;
+ToxiclibsSupport     gfx;
+Minim                minim;
+FFT                  fftLin;
+AudioInput           in;
+BeatDetect           beat;
+BeatListener         bl;
 
-/*
-------------------------------------------------------------------------------------------------------
-*/
+/*------------------------------------------------------------------------------------------------------*/
 
-boolean       rec = false;
-boolean       debug = true;
-int           index;
-int           currentMillis = 0, recMillis;
-JSONObject    data;
+boolean              rec = false;
+int                  index;
+int                  currentMillis;
+JSONObject           data;
+
+/*------------------------------------------------------------------------------------------------------*/
 
 void setup() {
   
   size(700,1000,P3D);
-  smooth();
   
   // init toxiclibs
   gfx = new ToxiclibsSupport(this);
@@ -41,17 +37,12 @@ void setup() {
   // init audio utils
   in = minim.getLineIn(Minim.STEREO, 1024);
   fftLin = new FFT( in.bufferSize(), in.sampleRate() );
-  
   beat = new BeatDetect(in.bufferSize(), in.sampleRate());
   beat.setSensitivity(100);
-
   bl = new BeatListener(beat, in); 
   
   // init array for data storage
   data = new JSONObject();
-  
-  // set index
-  setNewIndex();
   
 }
 
@@ -93,7 +84,7 @@ void draw() {
   
     stroke(0);
     noFill();
-    strokeWeight(1);
+    strokeWeight(.5);
     
     String[] frequencyData = {};
         
