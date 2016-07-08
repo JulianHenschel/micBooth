@@ -6,14 +6,24 @@ import processing.pdf.*;
 import ddf.minim.analysis.*;
 import ddf.minim.*;
 
+/*
+------------------------------------------------------------------------------------------------------
+*/
+
 ToxiclibsSupport gfx;
 Minim minim;  
 FFT fftLin;
 AudioInput in;
-ScaleMap logMap;
 
-boolean rec = false, debug = true;
-int index;
+/*
+------------------------------------------------------------------------------------------------------
+*/
+
+boolean       rec = false;
+boolean       debug = true;
+int           index;
+int           currentMillis = 0, recMillis;
+JSONObject    data;
 
 void setup() {
   
@@ -28,9 +38,10 @@ void setup() {
   
   // init audio utils
   in = minim.getLineIn();
-  
   fftLin = new FFT( in.bufferSize(), in.sampleRate() );
-  fftLin.linAverages( 10 );
+  
+  // init array for data storage
+  data = new JSONObject();
   
   // set index
   setNewIndex();
@@ -40,6 +51,12 @@ void setup() {
 void draw() {
   
   background(255);
+  
+  // update freuquency info
+  fftLin.forward(in.mix);
+  
+  // set title
+  surface.setTitle((int(frameRate) + " fps"));
   
   // show rec info
   if(rec) 
@@ -51,27 +68,63 @@ void draw() {
   noStroke();
   ellipse(width/2, height-100, 60, 60);
   
+  // show time info
+  if(rec) 
+  {
+    fill(0);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    textSize(14);
+        
+    text(nf((millis()-currentMillis)/1000,2)+" Seconds", 0, height-100, width, 100);
+    
+  }
+  
   // show freuqence
   pushMatrix();
   translate(width/2,height-(height/5),0);
   
-    fftLin.forward(in.mix);
-    
     stroke(0);
     noFill();
     strokeWeight(1);
     
-    for(int i = 0; i < fftLin.specSize(); i+=1) 
+    String[] frequencyData = {};
+        
+    for(int i = 0; i < fftLin.specSize(); i++) 
     {
       
-      float x = map(i, 0, fftLin.specSize(), 0, -width*2);
-      int scale = 10;
-      float smoothFactor = 0.2;
+      float x = map(i, 0, fftLin.specSize(), 0, -width/2);
+      int scale = 20;
+      float smoothFactor = 0.3;
       
-      line(x, 0, x, 0 - fftLin.getBand(i) * smoothFactor * scale);
-      line(-x, 0, -x, 0 - fftLin.getBand(i) * smoothFactor * scale);
-      line(x, 0, x, 0 + fftLin.getBand(i) * smoothFactor * scale);
-      line(-x, 0, -x, 0 + fftLin.getBand(i)* smoothFactor * scale);
+      if((i % 5) == 0) 
+      {
+        line(x, 0, x, 0 - fftLin.getBand(i) * smoothFactor * scale);
+        line(-x, 0, -x, 0 - fftLin.getBand(i) * smoothFactor * scale);
+        line(x, 0, x, 0 + fftLin.getBand(i) * smoothFactor * scale);
+        line(-x, 0, -x, 0 + fftLin.getBand(i)* smoothFactor * scale);
+      }  
+      
+      if(rec) 
+        if((i % 5) == 0) 
+          frequencyData = append(frequencyData, str(fftLin.getBand(i)));
+          
+    }
+        
+    // save json data
+    if(rec) 
+    {
+      
+      JSONObject timer = new JSONObject();
+                 timer.setInt("id", millis()-currentMillis);
+                 timer.setString("data", join(frequencyData, ","));
+                 timer.setBoolean("isKick", false);
+                 timer.setBoolean("isSnare", false);
+                 timer.setBoolean("isHat", false);
+      
+      data.setJSONObject(str(frameCount), timer);
+      saveJSONObject(data, "data/archiv/"+nf(index,4)+"/new.json");
+      
     }
 
   popMatrix();
@@ -89,6 +142,12 @@ void setNewIndex() {
   
 }
 
+void resetProject() {
+  
+  data = new JSONObject();
+  
+}
+
 void mousePressed() {
   
   rec = true;
@@ -96,10 +155,15 @@ void mousePressed() {
   // set new index
   setNewIndex();
   
+  // start recording
+  currentMillis = millis();
+  
 }
 
 void mouseReleased() {
   
   rec = false;
+  
+  resetProject();
   
 }
