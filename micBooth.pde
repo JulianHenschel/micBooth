@@ -3,8 +3,8 @@ import toxi.math.*;
 import toxi.math.noise.*;
 import toxi.processing.*;
 import processing.pdf.*;
-import ddf.minim.analysis.*;
 import ddf.minim.*;
+import ddf.minim.analysis.*;
 
 /*
 ------------------------------------------------------------------------------------------------------
@@ -14,6 +14,8 @@ ToxiclibsSupport gfx;
 Minim minim;  
 FFT fftLin;
 AudioInput in;
+BeatDetect beat;
+BeatListener bl;
 
 /*
 ------------------------------------------------------------------------------------------------------
@@ -37,8 +39,13 @@ void setup() {
   minim = new Minim(this);
   
   // init audio utils
-  in = minim.getLineIn();
+  in = minim.getLineIn(Minim.STEREO, 1024);
   fftLin = new FFT( in.bufferSize(), in.sampleRate() );
+  
+  beat = new BeatDetect(in.bufferSize(), in.sampleRate());
+  beat.setSensitivity(100);
+
+  bl = new BeatListener(beat, in); 
   
   // init array for data storage
   data = new JSONObject();
@@ -116,14 +123,13 @@ void draw() {
     {
       
       JSONObject timer = new JSONObject();
-                 timer.setInt("id", millis()-currentMillis);
+                 timer.setInt("timestamp", millis()-currentMillis);
                  timer.setString("data", join(frequencyData, ","));
-                 timer.setBoolean("isKick", false);
-                 timer.setBoolean("isSnare", false);
-                 timer.setBoolean("isHat", false);
+                 timer.setBoolean("isKick", beat.isKick());
+                 timer.setBoolean("iSnare", beat.isSnare());
+                 timer.setBoolean("isHat", beat.isHat());
       
       data.setJSONObject(str(frameCount), timer);
-      saveJSONObject(data, "data/archiv/"+nf(index,4)+"/new.json");
       
     }
 
@@ -163,6 +169,9 @@ void mousePressed() {
 void mouseReleased() {
   
   rec = false;
+  
+  // save file
+  saveJSONObject(data, "data/archiv/"+nf(index,4)+"/new.json");
   
   resetProject();
   
