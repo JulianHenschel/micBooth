@@ -14,6 +14,7 @@ FFT                  fftLin;
 AudioInput           in;
 BeatDetect           beat;
 BeatListener         bl;
+AudioRecorder        recorder;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -137,11 +138,8 @@ void setNewIndex() {
   
   index = newId;
   
-}
-
-void resetProject() {
-  
-  data = new JSONObject();
+  // create archiv folder
+  createOutput("data/archiv/"+nf(index,4)+"/.dummy");
   
 }
 
@@ -155,15 +153,29 @@ void mousePressed() {
   // start recording
   currentMillis = millis();
   
+  recorder = minim.createRecorder(in, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".wav");
+  
+  // start recording
+  if(!recorder.isRecording())
+    recorder.beginRecord();
+  
 }
 
 void mouseReleased() {
   
   rec = false;
   
-  // save file
-  saveJSONObject(data, "data/archiv/"+nf(index,4)+"/new.json");
+  // save json data
+  saveJSONObject(data, "data/archiv/"+nf(index,4)+"/data.json");
   
-  resetProject();
+  // stop and save record
+  if(recorder.isRecording())
+  {
+    recorder.endRecord();
+    recorder.save();
+  }
+  
+  // clear data object
+  data = new JSONObject();
   
 }
