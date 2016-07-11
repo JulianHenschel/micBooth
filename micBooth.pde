@@ -15,10 +15,12 @@ AudioInput           in;
 BeatDetect           beat;
 BeatListener         bl;
 AudioRecorder        recorder;
+Geo                  geo;
 
 /*------------------------------------------------------------------------------------------------------*/
 
 boolean              rec = false;
+boolean              display = false;
 int                  index;
 int                  currentMillis;
 JSONObject           data;
@@ -34,6 +36,9 @@ void setup() {
   
   // init toxiclibs
   gfx = new ToxiclibsSupport(this);
+  
+  // init geometry
+  geo = new Geo();
   
   // init minim
   minim = new Minim(this);
@@ -132,6 +137,13 @@ void draw() {
     }
 
   popMatrix();
+  
+  // display graphic
+  if(display) 
+  {
+    geo.display();
+    noLoop();
+  }
 
 }
 
@@ -154,6 +166,7 @@ void setNewIndex() {
 void mousePressed() {
   
   rec = true;
+  display = false;
   
   // set new index
   setNewIndex();
@@ -189,4 +202,18 @@ void mouseReleased() {
   // clear data object
   data = new JSONObject();
   
+  // show graphic
+  display = true;
+  
+  geo.loadData(index);
+  
+}
+
+void keyPressed() {
+  
+  if (key == 'n') 
+  {
+    display = false;
+    loop();
+  }
 }
