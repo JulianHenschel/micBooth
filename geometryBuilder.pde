@@ -6,11 +6,7 @@ class Geo {
   float maxVal = 0, minVal = 0;
   String[] keys;
 
-  Geo() {
-    
-    
-    
-  }
+  Geo() { }
 
   void loadData(int i) {
         
@@ -43,15 +39,30 @@ class Geo {
       }
       
     }
-  
+    
+    // init new mesh
+
+    
 }
 
   void display() {
 
     background(255);
-    
-    
     noLoop();
+    
+    pushMatrix();
+    translate(width/2, height/2, 0);
+    
+      strokeWeight(1);
+      stroke(0);
+      
+      for(int i = 0; i < keys.length; i++) 
+      {
+        
+        
+      } 
+    
+    popMatrix();
     
   }
   

@@ -1,10 +1,13 @@
+import processing.pdf.*;
 import toxi.geom.*;
 import toxi.math.*;
+import toxi.geom.mesh.*;
 import toxi.math.noise.*;
 import toxi.processing.*;
-import processing.pdf.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import java.text.NumberFormat;
+import java.text.DecimalFormat;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -29,7 +32,7 @@ JSONObject           data;
 
 void setup() {
   
-  size(700,1000,P3D);
+  size(600,800,P3D);
   smooth();
   
   // init toxiclibs
@@ -42,7 +45,7 @@ void setup() {
   minim = new Minim(this);
   
   // init audio utils
-  in = minim.getLineIn(Minim.STEREO, 1024);
+  in = minim.getLineIn(Minim.STEREO, 256);
   
   fftLin = new FFT(in.bufferSize(), in.sampleRate());
   
@@ -92,25 +95,28 @@ void draw() {
     // update freuquency info
     fftLin.forward(in.mix);
     
-    // display freuqency
+    // settings
+    int scale = 20;
+    float smoothFactor = 0.3;
+    int resolution = 1;
+        
+    // display frequency
     for(int i = 0; i < fftLin.specSize(); i++) 
     {
       
       float x = map(i, 0, fftLin.specSize(), 0, -width/2);
-      int scale = 20;
-      float smoothFactor = 0.3;
       
-      if((i % 5) == 0) 
+      if((i % resolution) == 0) 
       {
         line(x, 0, x, 0 - fftLin.getBand(i) * smoothFactor * scale);
         line(-x, 0, -x, 0 - fftLin.getBand(i) * smoothFactor * scale);
         line(x, 0, x, 0 + fftLin.getBand(i) * smoothFactor * scale);
-        line(-x, 0, -x, 0 + fftLin.getBand(i)* smoothFactor * scale);
+        line(-x, 0, -x, 0 + fftLin.getBand(i) * smoothFactor * scale);
       }  
-      
+            
       if(rec) 
-        if((i % 5) == 0) 
-          frequencyData = append(frequencyData, str(fftLin.getBand(i)));
+        if((i % resolution) == 0) 
+          frequencyData = append(frequencyData,  str(fftLin.getBand(i))  );
           
     }
         
@@ -177,7 +183,6 @@ void mousePressed() {
     recorder.beginRecord();
   }
   
-  display = false;
   loop();
   
 }
@@ -201,7 +206,6 @@ void mouseReleased() {
   
   // show graphic
   display = true;
-  
   geo.loadData(index);
   
 }
