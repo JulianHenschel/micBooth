@@ -17,11 +17,12 @@ class Geo {
     this.keys = (String[]) json.keys().toArray(new String[json.size()]);
     Arrays.sort(this.keys);
     
-    this.preProcess();
+    this.preProcessData();
     
   }
   
-  void preProcess() {
+  // define min and max values for data viz
+  void preProcessData() {
     
     for(int i = 0; i < this.json.size(); i++) 
     {
