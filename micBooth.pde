@@ -30,9 +30,7 @@ JSONObject           data;
 void setup() {
   
   size(700,1000,P3D);
-  
   smooth();
-  frameRate(50);
   
   // init toxiclibs
   gfx = new ToxiclibsSupport(this);
@@ -46,7 +44,7 @@ void setup() {
   // init audio utils
   in = minim.getLineIn(Minim.STEREO, 1024);
   
-  fftLin = new FFT( in.bufferSize(), in.sampleRate() );
+  fftLin = new FFT(in.bufferSize(), in.sampleRate());
   
   beat = new BeatDetect(in.bufferSize(), in.sampleRate());
   beat.setSensitivity(100);
@@ -65,16 +63,6 @@ void draw() {
   // set title
   surface.setTitle((int(frameRate) + " fps"));
   
-  // show rec info
-  if(rec) 
-    fill(255,0,0);
-  else 
-    fill(200);
-    
-  ellipseMode(CENTER);
-  noStroke();
-  ellipse(width/2, height-100, 60, 60);
-  
   // show time info
   if(rec) 
   {
@@ -89,8 +77,13 @@ void draw() {
   // show freuqence
   pushMatrix();
   translate(width/2,height/2,0);
-  
-    stroke(0);
+    
+    // show rec info
+    if(rec) 
+      stroke(255,0,0);
+    else 
+      stroke(0);
+      
     noFill();
     strokeWeight(.5);
     
@@ -144,8 +137,9 @@ void draw() {
     geo.display();
     noLoop();
   }
-
+  
 }
+
 
 void setNewIndex() {
   
@@ -182,6 +176,9 @@ void mousePressed() {
   {
     recorder.beginRecord();
   }
+  
+  display = false;
+  loop();
   
 }
 

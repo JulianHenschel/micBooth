@@ -5,11 +5,13 @@ class Geo {
   JSONObject json;
   float maxVal = 0, minVal = 0;
   String[] keys;
-  
+
   Geo() {
     
+    
+    
   }
-  
+
   void loadData(int i) {
         
     json = loadJSONObject("data/archiv/"+nf(i,4)+"/data.json");
@@ -42,14 +44,16 @@ class Geo {
       }
       
     }
-    
-  }
   
+}
+
   void display() {
-    
+
     background(255);
     
     
+    noLoop();
     
   }
+  
 }
