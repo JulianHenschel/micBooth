@@ -31,8 +31,7 @@ class Geo {
 
       JSONObject data = json.getJSONObject(keys[i]);
       
-      String frequencyData = data.getString("data");
-      float[] fd_array = float(split(frequencyData, ','));
+      float[] fd_array = float(split(data.getString("data"), ','));
       
       for(int j = 0; j < fd_array.length; j++) 
       {
