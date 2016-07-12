@@ -48,7 +48,7 @@ void setup() {
   fftLin = new FFT(in.bufferSize(), in.sampleRate());
   
   beat = new BeatDetect(in.bufferSize(), in.sampleRate());
-  beat.setSensitivity(100);
+  beat.setSensitivity(200);
   
   bl = new BeatListener(beat, in); 
   
@@ -89,6 +89,7 @@ void draw() {
     strokeWeight(.5);
     
     String[] frequencyData = {};
+    float addition = 0;
     
     // update freuquency info
     fftLin.forward(in.mix);
@@ -121,12 +122,12 @@ void draw() {
     // save json data
     if(rec) 
     {
-          
+      
       JSONObject timer = new JSONObject();
                  timer.setInt("second", (millis()-currentMillis)/1000);
                  timer.setString("data", join(frequencyData, ","));
                  timer.setBoolean("isKick", beat.isKick());
-                 timer.setBoolean("iSnare", beat.isSnare());
+                 timer.setBoolean("isSnare", beat.isSnare());
                  timer.setBoolean("isHat", beat.isHat());
       
       data.setJSONObject( nf((int)millis()-currentMillis, 5) , timer );
@@ -139,7 +140,7 @@ void draw() {
   if(display) 
   {
     geo.display();
-    noLoop();
+    //noLoop();
   }
   
 }
