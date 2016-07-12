@@ -5,6 +5,7 @@ class Geo {
   JSONObject json;
   float maxVal = 0, minVal = 0;
   String[] keys;
+  int subKeyCount;
 
   Geo() { }
 
@@ -12,11 +13,11 @@ class Geo {
         
     json = loadJSONObject("data/archiv/"+nf(i,4)+"/data.json");
     
-    this.keys = (String[]) json.keys().toArray(new String[json.size()]);
+    this.keys = (String[]) json.keys().toArray(new String[json.size()]);    
     Arrays.sort(this.keys);
     
     this.preProcessData();
-    
+        
   }
   
   // define min and max values for data viz
@@ -38,12 +39,10 @@ class Geo {
           this.minVal = fd_array[j];
       }
       
+      subKeyCount = fd_array.length;
+      
     }
-    
-    // init new mesh
-
-    
-}
+  }
 
   void display() {
 
@@ -60,8 +59,9 @@ class Geo {
       {
         
         
+        
       } 
-    
+        
     popMatrix();
     
   }

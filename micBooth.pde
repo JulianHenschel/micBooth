@@ -6,8 +6,6 @@ import toxi.math.noise.*;
 import toxi.processing.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -123,15 +121,15 @@ void draw() {
     // save json data
     if(rec) 
     {
-      
+          
       JSONObject timer = new JSONObject();
-                 timer.setInt("timestamp", millis()-currentMillis);
+                 timer.setInt("second", (millis()-currentMillis)/1000);
                  timer.setString("data", join(frequencyData, ","));
                  timer.setBoolean("isKick", beat.isKick());
                  timer.setBoolean("iSnare", beat.isSnare());
                  timer.setBoolean("isHat", beat.isHat());
       
-      data.setJSONObject(str(frameCount), timer);
+      data.setJSONObject( nf((int)millis()-currentMillis, 5) , timer );
       
     }
 
