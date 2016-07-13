@@ -126,7 +126,7 @@ void draw() {
     {
       
       JSONObject timer = new JSONObject();
-                 timer.setInt("second", (millis()-currentMillis)/1000);
+                 //timer.setInt("second", (millis()-currentMillis)/1000);
                  timer.setString("data", join(frequencyData, ","));
                  timer.setBoolean("isKick", beat.isKick());
                  timer.setBoolean("isSnare", beat.isSnare());
@@ -143,7 +143,6 @@ void draw() {
   {
 
     PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
-    
     geo.display();
     endRaw();
     
