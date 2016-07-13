@@ -52,17 +52,20 @@ class Geo {
     pushMatrix();
     translate(width/2, height/2, 0);
       
-      rotateY(frameCount * 0.01); 
-      rotateX(frameCount * 0.01);
+      rotateY(frameCount * 0.001); 
+      rotateX(frameCount * 0.001);
       
       float sphereRadius = 400;
       
       float s = 0, s_add = 10;
-      float t = 0, t_add = 0.3;
+      float t = 0, t_add = 180/(float)this.json.size();
       
+      // init arraylist für line connection
+      ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
+
       // display settings
-      float strokeWeight = 1;
-      float strokeHighlightWeight = 5;
+      float strokeWeight = 2;
+      float strokeHighlightWeight = 4;
     
       for(int i = 0; i < this.json.size(); i++) 
       {
@@ -83,9 +86,14 @@ class Geo {
           JSONObject data = json.getJSONObject(keys[i]);
           
           if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat"))
+          {
             strokeWeight(strokeHighlightWeight);
+            lc.add( new Vec3D(thisx, thisy, thisz) );
+          }
           else 
+          {
             strokeWeight(strokeWeight);
+          }
           
           if (lastx != 0 && t > 0) 
           {
@@ -94,6 +102,21 @@ class Geo {
           }
           
         popMatrix();
+        
+        // draw connections
+        for(int j = 0; j < lc.size(); j++) {
+          
+          if(j < lc.size()-1) 
+          {
+            
+            stroke(0);
+            strokeWeight(strokeHighlightWeight);
+            
+            Line3D l = new Line3D(lc.get(j), lc.get(j+1));
+            gfx.line(l);
+            
+          }
+        }
         
         lastx = thisx; 
         lasty = thisy; 

@@ -89,7 +89,6 @@ void draw() {
     strokeWeight(.5);
     
     String[] frequencyData = {};
-    float addition = 0;
     
     // update freuquency info
     fftLin.forward(in.mix);
