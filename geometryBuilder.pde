@@ -52,11 +52,11 @@ class Geo {
     pushMatrix();
     translate(width/2, height/2, 0);
       
-      rotateY(frameCount * random(0, HALF_PI)); 
-      rotateX(frameCount * random(0, HALF_PI));
-      
-      float sphereRadius = 300;
-      
+      //rotateY(random(0, HALF_PI)); 
+      rotateY(frameCount*0.001); 
+      rotateX(frameCount*0.001);
+      rotateZ(frameCount*0.001);
+
       float s = 0, s_add = 10;
       float t = 0, t_add = 180/(float)this.json.size();
       
@@ -64,8 +64,9 @@ class Geo {
       ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
 
       // display settings
-      float strokeWeight = 1;
-      float strokeHighlightWeight = 4;
+      float sphereRadius = 400;
+      float strokeWeight = 2;
+      float strokeHighlightWeight = 10;
     
       for(int i = 0; i < this.json.size(); i++) 
       {
@@ -85,6 +86,7 @@ class Geo {
           
           JSONObject data = json.getJSONObject(keys[i]);
           
+          // show structure
           if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat"))
             lc.add( new Vec3D(thisx, thisy, thisz) );
           
@@ -95,26 +97,42 @@ class Geo {
             point(0,0,0);
           }
           
-        popMatrix();
-        
-        // draw connections
-        for(int j = 0; j < lc.size(); j++)
-        {
-          if(j < lc.size()-1) 
+          // show details
+          float[] details = float(split(data.getString("data"), ','));
+          int details_length = details.length;
+          float addition = 0;
+                  
+          for(int d = 0; d < details_length; d++) 
           {
-            Line3D l = new Line3D(lc.get(j), lc.get(j+1));
             
-            stroke(0);
-            strokeWeight(strokeHighlightWeight);
-            gfx.line(l);
+            //float value = map(details[d], minVal, maxVal, 0, sphereRadius);
+            addition += details[d];
+            
+            
           }
-        }
+          
+          
         
-        lastx = thisx; 
-        lasty = thisy; 
-        lastz = thisz;
+          lastx = thisx; 
+          lasty = thisy; 
+          lastz = thisz;
         
+        popMatrix();
+
       } 
+      
+      // draw connections
+      
+      stroke(0);
+      strokeWeight(strokeHighlightWeight);   
+      beginShape();
+      
+      for(int j = 0; j < lc.size(); j++)
+      {
+        vertex(lc.get(j).x, lc.get(j).y, lc.get(j).z);
+      }
+      
+      endShape();
         
     popMatrix();
     

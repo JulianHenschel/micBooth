@@ -60,6 +60,7 @@ void setup() {
 void draw() {
   
   background(255);
+  ortho();
   
   // set title
   surface.setTitle((int(frameRate) + " fps"));
@@ -126,7 +127,6 @@ void draw() {
     {
       
       JSONObject timer = new JSONObject();
-                 //timer.setInt("second", (millis()-currentMillis)/1000);
                  timer.setString("data", join(frequencyData, ","));
                  timer.setBoolean("isKick", beat.isKick());
                  timer.setBoolean("isSnare", beat.isSnare());
@@ -141,12 +141,19 @@ void draw() {
   // display graphic
   if(display) 
   {
-
-    PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
-    geo.display();
-    endRaw();
     
-    noLoop();
+    //beginCamera();
+    //camera(width/2, height/2, -1000, width/2, height/2, 0, 0, 1, 0);
+
+      //PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
+        
+        geo.display();
+      
+      //endRaw();
+      
+    //endCamera();
+    
+    //noLoop();
     
   }
   
