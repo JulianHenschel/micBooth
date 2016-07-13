@@ -3,7 +3,7 @@ import java.util.Arrays;
 class Geo {
   
   JSONObject json;
-  float maxVal = 0, minVal = 0;
+  float maxVal = 0, maxAddVal = 0;
   String[] keys;
   
   float lastx = 0; 
@@ -26,6 +26,8 @@ class Geo {
   // define min and max values for data viz
   void preProcessData() {
     
+    float addition = 0;
+    
     for(int i = 0; i < this.json.size(); i++) 
     {
 
@@ -37,12 +39,18 @@ class Geo {
       {
         if(fd_array[j] > this.maxVal) 
           this.maxVal = fd_array[j];
-          
-        if(fd_array[j] < this.minVal) 
-          this.minVal = fd_array[j];
+        
+        // save value addition
+        addition += fd_array[j];
+        
       }
+      
+      // save highest addition value
+      if(addition > this.maxAddVal)
+        this.maxAddVal = addition;
             
     }
+    
   }
 
   void display() {
@@ -64,9 +72,9 @@ class Geo {
       ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
 
       // display settings
-      float sphereRadius = 400;
-      float strokeWeight = 2;
-      float strokeHighlightWeight = 10;
+      float sphereRadius = 300;
+      float strokeWeight = 1;
+      float strokeHighlightWeight = 3;
     
       for(int i = 0; i < this.json.size(); i++) 
       {
@@ -89,6 +97,43 @@ class Geo {
           // show structure
           if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat"))
             lc.add( new Vec3D(thisx, thisy, thisz) );
+  
+          // show details
+          float[] details = float(split(data.getString("data"), ','));
+          int details_length = details.length;
+          float addition = 0;
+          
+          noFill();
+          strokeWeight(strokeWeight/4);
+          stroke(0,100);
+          beginShape();
+          
+          vertex(0, 0, 0);
+          
+          for(int d = 0; d < details_length; d++) 
+          {
+            
+            //float value = map(details[d], minVal, maxVal, 0, sphereRadius);
+            addition += details[d];
+            
+            if(lc.size() > 0) 
+            {
+                            
+              Vec3D point1 = new Vec3D(-thisx+lastx, -thisy+lasty, -thisz+lastz);
+              Vec3D point2 = new Vec3D(0, 0, 0);
+              Vec3D anchor = new Vec3D(-thisx, -thisy, -thisz);
+              //Vec3D anchor = lc.get( (int)random(0,lc.size()) );
+              
+              
+              bezierVertex(point1.x, point1.y, point1.z, 
+                           point2.x, point2.y, point2.z, 
+                           anchor.x, anchor.y, anchor.z
+                          );
+            }
+            
+          }
+          
+          endShape();
           
           if (lastx != 0 && t > 0) 
           {
@@ -96,22 +141,6 @@ class Geo {
             stroke(0);
             point(0,0,0);
           }
-          
-          // show details
-          float[] details = float(split(data.getString("data"), ','));
-          int details_length = details.length;
-          float addition = 0;
-                  
-          for(int d = 0; d < details_length; d++) 
-          {
-            
-            //float value = map(details[d], minVal, maxVal, 0, sphereRadius);
-            addition += details[d];
-            
-            
-          }
-          
-          
         
           lastx = thisx; 
           lasty = thisy; 
@@ -125,7 +154,7 @@ class Geo {
       
       stroke(0);
       strokeWeight(strokeHighlightWeight);   
-      beginShape();
+      beginShape(TRIANGLE_STRIP);
       
       for(int j = 0; j < lc.size(); j++)
       {

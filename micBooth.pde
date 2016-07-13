@@ -60,7 +60,6 @@ void setup() {
 void draw() {
   
   background(255);
-  ortho();
   
   // set title
   surface.setTitle((int(frameRate) + " fps"));
