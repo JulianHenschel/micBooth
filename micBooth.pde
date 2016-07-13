@@ -106,10 +106,13 @@ void draw() {
       
       if((i % resolution) == 0) 
       {
-        line(x, 0, x, 0 - fftLin.getBand(i) * smoothFactor * scale);
-        line(-x, 0, -x, 0 - fftLin.getBand(i) * smoothFactor * scale);
-        line(x, 0, x, 0 + fftLin.getBand(i) * smoothFactor * scale);
-        line(-x, 0, -x, 0 + fftLin.getBand(i) * smoothFactor * scale);
+        if(!display)
+        {
+          line(x, 0, x, 0 - fftLin.getBand(i) * smoothFactor * scale);
+          line(-x, 0, -x, 0 - fftLin.getBand(i) * smoothFactor * scale);
+          line(x, 0, x, 0 + fftLin.getBand(i) * smoothFactor * scale);
+          line(-x, 0, -x, 0 + fftLin.getBand(i) * smoothFactor * scale);
+        }
       }  
             
       if(rec) 
@@ -138,8 +141,14 @@ void draw() {
   // display graphic
   if(display) 
   {
+
+    PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
+    
     geo.display();
-    //noLoop();
+    endRaw();
+    
+    noLoop();
+    
   }
   
 }
