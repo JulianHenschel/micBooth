@@ -48,7 +48,7 @@ void setup() {
   fftLin = new FFT(in.bufferSize(), in.sampleRate());
   
   beat = new BeatDetect(in.bufferSize(), in.sampleRate());
-  beat.setSensitivity(200);
+  beat.setSensitivity(400);
   
   bl = new BeatListener(beat, in); 
   
