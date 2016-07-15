@@ -73,9 +73,10 @@ class Geo {
         
         radius += 1;
         pushMatrix();
-        rotateX(radians(i));
-        rotateY(radians(i));
-        rotateZ(radians(i));
+        
+        rotateX(radians(i+noise(i)));
+        rotateY(radians(i+noise(i)));
+        rotateZ(radians(i+noise(i)));
         
           stroke(0);
           strokeWeight(0.01);
