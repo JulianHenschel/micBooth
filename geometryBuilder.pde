@@ -51,10 +51,9 @@ class Geo {
     pushMatrix();
     translate(width/2, height/2, 0);
       
-      //rotateY(random(0, HALF_PI)); 
-      //rotateY(random(0, HALF_PI)); 
-      //rotateX(random(0, HALF_PI));
-      //rotateZ(random(0, HALF_PI));
+      rotateY(random(0, HALF_PI)); 
+      rotateY(random(0, HALF_PI)); 
+      rotateX(random(0, HALF_PI));
 
       float s = 0, s_add = 10;
       float t = 0, t_add = 180/(float)this.json.size();
@@ -63,26 +62,14 @@ class Geo {
       ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
 
       // display settings
-      float sphereRadius = 200;
-      float strokeWeight = 1;
-      float strokeHighlightWeight = 5;
-      float radius = 100;
+      float sphereRadius = 150;
+      float radius = 80;
       
       for(int i = 0; i < this.json.size(); i+=1) 
       {
-        
-        radius += 1;
+       
         pushMatrix();
-        
-        rotateX(radians(i+noise(i)));
-        rotateY(radians(i+noise(i)));
-        rotateZ(radians(i+noise(i)));
-        
-          stroke(0);
-          strokeWeight(0.01);
-          ellipseMode(CENTER);
-          ellipse(0,0,radius,radius);
-
+          
           s += s_add;
           t += t_add;
                  
@@ -92,31 +79,47 @@ class Geo {
           float thisx = (sphereRadius * cos(radianS) * sin(radianT)); 
           float thisy = (sphereRadius * sin(radianS) * sin(radianT)); 
           float thisz = (sphereRadius * cos(radianT));
-            
+        
+          rotateX(radians(i+noise(i)));
+          rotateY(radians(i+noise(i)));
+          rotateZ(radians(i+noise(i)));
+        
+          stroke(0);
+          strokeWeight(.1);
+          ellipseMode(CENTER);
+          
+          if( (i % 2) == 0) {
+            ellipse(0,0,radius,radius);
+          }
+
           JSONObject data = json.getJSONObject(keys[i]);
+          
+          boolean mult = false;
           
           // save vectors to display structure
           if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat"))
-            lc.add( new Vec3D(thisx, thisy, thisz) );
+            mult = true;
             
           // draw bezier curves
           float[] details = float(split(data.getString("data"), ','));
 
-          for (int x = 0; x < data_length; x+=4) 
+          for (int x = details.length-1; x > 0; x-=2) 
           {  
                           
             float angle = TWO_PI/(float)details.length;
-            float value = map(details[x], 0, maxVal, 0.01, 30);
-
+            float value = map(details[x], 0, maxVal, 0.1, 20);
                       
             Vec3D point = new Vec3D(
                                     (radius/2)*(cos(angle*x)),
-                                    (radius/2)*(cos(angle*x)),
-                                    (radius/2)*(sin(angle*x))
-                                    );
-          
+                                    (radius/2)*(sin(angle*x)),
+                                    (radius/2)*(cos(angle*x))
+                                    );                                    
+            if(mult)
+              strokeWeight(value*3);
+            else 
+              strokeWeight(value);
+            
             stroke(0);
-            strokeWeight(value);
             gfx.point(point);
                         
           }
@@ -124,27 +127,13 @@ class Geo {
           lastx = thisx; 
           lasty = thisy; 
           lastz = thisz;
-      
+          
+          // update radius
+          radius++;
+                
         popMatrix();
 
-      } 
-      
-      // draw connections    
-      stroke(0);
-      strokeWeight(strokeHighlightWeight);   
-      beginShape(TRIANGLE_STRIP);
-      
-      for(int j = 0; j < lc.size(); j++)
-      {
-        
-        Vec3D center = new Vec3D(0, 0, 0);
-        Vec3D dataPoint = lc.get(j).subSelf(center).scaleSelf(1);
-                
-        //vertex(dataPoint.x, dataPoint.y, dataPoint.z);
-        
       }
-      
-      endShape();
       
     popMatrix();
     
