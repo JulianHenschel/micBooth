@@ -80,15 +80,15 @@ class Geo {
           float thisy = (sphereRadius * sin(radianS) * sin(radianT)); 
           float thisz = (sphereRadius * cos(radianT));
         
-          rotateX(radians(i+noise(i)));
-          rotateY(radians(i+noise(i)));
-          rotateZ(radians(i+noise(i)));
+          rotateX(radians(i+noise(thisx)));
+          rotateY(radians(i+noise(thisy)));
+          rotateZ(radians(i+noise(thisz)));
         
           stroke(0);
           strokeWeight(.1);
           ellipseMode(CENTER);
           
-          if( (i % 2) == 0) {
+          if( (i % 3) == 0) {
             ellipse(0,0,radius,radius);
           }
 
@@ -129,7 +129,7 @@ class Geo {
           lastz = thisz;
           
           // update radius
-          radius++;
+          radius+=0.5;
                 
         popMatrix();
 
