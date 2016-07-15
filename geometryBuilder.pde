@@ -58,6 +58,8 @@ class Geo {
       float s = 0, s_add = 10;
       float t = 0, t_add = 180/(float)this.json.size();
       
+      println();
+      
       // init arraylist for line connection
       ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
 
@@ -114,12 +116,14 @@ class Geo {
                                     (radius/2)*(sin(angle*x)),
                                     (radius/2)*(cos(angle*x))
                                     );                                    
-            if(mult)
-              strokeWeight(value*3);
-            else 
+            if(mult) {
+              strokeWeight(value*2);
+              //stroke(255,0,0);
+            }else {
               strokeWeight(value);
+              stroke(0);
+            }
             
-            stroke(0);
             gfx.point(point);
                         
           }

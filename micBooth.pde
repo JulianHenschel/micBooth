@@ -1,15 +1,10 @@
 import processing.pdf.*;
 import toxi.geom.*;
 import toxi.math.*;
-import toxi.geom.mesh.*;
-import toxi.geom.mesh2d.*;
 import toxi.math.noise.*;
 import toxi.processing.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
-import toxi.physics.*;
-import toxi.physics.behaviors.*;
-import toxi.physics.constraints.*;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -21,7 +16,6 @@ BeatDetect           beat;
 BeatListener         bl;
 AudioRecorder        recorder;
 Geo                  geo;
-VerletPhysics        physics;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -50,14 +44,10 @@ void setup() {
   // init audio utils
   in = minim.getLineIn(Minim.STEREO, 512);
   
-  // add gravity
-  physics = new VerletPhysics();
-  physics.addBehavior(new GravityBehavior(new Vec3D(0,-0.4,0)));
-  
   fftLin = new FFT(in.bufferSize(), in.sampleRate());
   
   beat = new BeatDetect(in.bufferSize(), in.sampleRate());
-  beat.setSensitivity(100);
+  beat.setSensitivity(1);
   
   bl = new BeatListener(beat, in); 
   
