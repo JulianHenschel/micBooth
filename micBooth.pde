@@ -1,7 +1,5 @@
 import processing.pdf.*;
 import toxi.geom.*;
-import toxi.math.*;
-import toxi.math.noise.*;
 import toxi.processing.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
