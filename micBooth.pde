@@ -2,10 +2,14 @@ import processing.pdf.*;
 import toxi.geom.*;
 import toxi.math.*;
 import toxi.geom.mesh.*;
+import toxi.geom.mesh2d.*;
 import toxi.math.noise.*;
 import toxi.processing.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import toxi.physics.*;
+import toxi.physics.behaviors.*;
+import toxi.physics.constraints.*;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -17,6 +21,7 @@ BeatDetect           beat;
 BeatListener         bl;
 AudioRecorder        recorder;
 Geo                  geo;
+VerletPhysics        physics;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -30,7 +35,7 @@ JSONObject           data;
 
 void setup() {
   
-  size(600,800,P3D);
+  size(600,900,P3D);
   smooth();
   
   // init toxiclibs
@@ -43,12 +48,16 @@ void setup() {
   minim = new Minim(this);
   
   // init audio utils
-  in = minim.getLineIn(Minim.STEREO, 256);
+  in = minim.getLineIn(Minim.STEREO, 512);
+  
+  // add gravity
+  physics = new VerletPhysics();
+  physics.addBehavior(new GravityBehavior(new Vec3D(0,-0.4,0)));
   
   fftLin = new FFT(in.bufferSize(), in.sampleRate());
   
   beat = new BeatDetect(in.bufferSize(), in.sampleRate());
-  beat.setSensitivity(400);
+  beat.setSensitivity(100);
   
   bl = new BeatListener(beat, in); 
   
@@ -141,18 +150,13 @@ void draw() {
   if(display) 
   {
     
-    //beginCamera();
-    //camera(width/2, height/2, -1000, width/2, height/2, 0, 0, 1, 0);
-
-      //PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
+      PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
         
         geo.display();
       
-      //endRaw();
-      
-    //endCamera();
-    
-    //noLoop();
+      endRaw();
+          
+    noLoop();
     
   }
   
@@ -222,12 +226,13 @@ void mouseReleased() {
   
 }
 
+/*
 void keyPressed() {
   
   if (key == 'n') 
   {
-    display = false;
-    loop();
+    
   }
 
 }
+*/

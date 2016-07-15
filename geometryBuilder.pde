@@ -5,6 +5,7 @@ class Geo {
   JSONObject json;
   float maxVal = 0, maxAddVal = 0;
   String[] keys;
+  int data_length = 0;
   
   float lastx = 0; 
   float lasty = 0; 
@@ -25,31 +26,21 @@ class Geo {
   
   // define min and max values for data viz
   void preProcessData() {
-    
-    float addition = 0;
-    
+        
     for(int i = 0; i < this.json.size(); i++) 
     {
 
       JSONObject data = json.getJSONObject(keys[i]);
-      
       float[] fd_array = float(split(data.getString("data"), ','));
+      
+      this.data_length = fd_array.length;
       
       for(int j = 0; j < fd_array.length; j++) 
       {
         if(fd_array[j] > this.maxVal) 
           this.maxVal = fd_array[j];
-        
-        // save value addition
-        addition += fd_array[j];
-        
       }
-      
-      // save highest addition value
-      if(addition > this.maxAddVal)
-        this.maxAddVal = addition;
-            
-    }
+    } 
     
   }
 
@@ -61,9 +52,9 @@ class Geo {
     translate(width/2, height/2, 0);
       
       //rotateY(random(0, HALF_PI)); 
-      rotateY(frameCount*0.001); 
-      rotateX(frameCount*0.001);
-      rotateZ(frameCount*0.001);
+      //rotateY(random(0, HALF_PI)); 
+      //rotateX(random(0, HALF_PI));
+      //rotateZ(random(0, HALF_PI));
 
       float s = 0, s_add = 10;
       float t = 0, t_add = 180/(float)this.json.size();
@@ -72,97 +63,88 @@ class Geo {
       ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
 
       // display settings
-      float sphereRadius = 300;
+      float sphereRadius = 200;
       float strokeWeight = 1;
-      float strokeHighlightWeight = 3;
-    
-      for(int i = 0; i < this.json.size(); i++) 
+      float strokeHighlightWeight = 5;
+      float radius = 100;
+      
+      for(int i = 0; i < this.json.size(); i+=1) 
       {
         
-        s += s_add;
-        t += t_add;
-               
-        float radianS = radians(s); 
-        float radianT = radians(t);
-                        
-        float thisx = (sphereRadius * cos(radianS) * sin(radianT)); 
-        float thisy = (sphereRadius * sin(radianS) * sin(radianT)); 
-        float thisz = (sphereRadius * cos(radianT));
-        
+        radius += 1;
         pushMatrix();
-        translate(thisx, thisy, thisz);
-          
+        rotateX(radians(i));
+        rotateY(radians(i));
+        rotateZ(radians(i));
+        
+          stroke(0);
+          strokeWeight(0.01);
+          ellipseMode(CENTER);
+          ellipse(0,0,radius,radius);
+
+          s += s_add;
+          t += t_add;
+                 
+          float radianS = radians(s); 
+          float radianT = radians(t);
+                          
+          float thisx = (sphereRadius * cos(radianS) * sin(radianT)); 
+          float thisy = (sphereRadius * sin(radianS) * sin(radianT)); 
+          float thisz = (sphereRadius * cos(radianT));
+            
           JSONObject data = json.getJSONObject(keys[i]);
           
-          // show structure
+          // save vectors to display structure
           if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat"))
             lc.add( new Vec3D(thisx, thisy, thisz) );
-  
-          // show details
+            
+          // draw bezier curves
           float[] details = float(split(data.getString("data"), ','));
-          int details_length = details.length;
-          float addition = 0;
+
+          for (int x = 0; x < data_length; x+=4) 
+          {  
+                          
+            float angle = TWO_PI/(float)details.length;
+            float value = map(details[x], 0, maxVal, 0.01, 30);
+
+                      
+            Vec3D point = new Vec3D(
+                                    (radius/2)*(cos(angle*x)),
+                                    (radius/2)*(cos(angle*x)),
+                                    (radius/2)*(sin(angle*x))
+                                    );
           
-          noFill();
-          strokeWeight(strokeWeight/4);
-          stroke(0,100);
-          beginShape();
-          
-          vertex(0, 0, 0);
-          
-          for(int d = 0; d < details_length; d++) 
-          {
-            
-            //float value = map(details[d], minVal, maxVal, 0, sphereRadius);
-            addition += details[d];
-            
-            if(lc.size() > 0) 
-            {
-                            
-              Vec3D point1 = new Vec3D(-thisx+lastx, -thisy+lasty, -thisz+lastz);
-              Vec3D point2 = new Vec3D(0, 0, 0);
-              Vec3D anchor = new Vec3D(-thisx, -thisy, -thisz);
-              //Vec3D anchor = lc.get( (int)random(0,lc.size()) );
-              
-              
-              bezierVertex(point1.x, point1.y, point1.z, 
-                           point2.x, point2.y, point2.z, 
-                           anchor.x, anchor.y, anchor.z
-                          );
-            }
-            
-          }
-          
-          endShape();
-          
-          if (lastx != 0 && t > 0) 
-          {
-            strokeWeight(strokeWeight);
             stroke(0);
-            point(0,0,0);
+            strokeWeight(value);
+            gfx.point(point);
+                        
           }
         
           lastx = thisx; 
           lasty = thisy; 
           lastz = thisz;
-        
+      
         popMatrix();
 
       } 
       
-      // draw connections
-      
+      // draw connections    
       stroke(0);
       strokeWeight(strokeHighlightWeight);   
       beginShape(TRIANGLE_STRIP);
       
       for(int j = 0; j < lc.size(); j++)
       {
-        vertex(lc.get(j).x, lc.get(j).y, lc.get(j).z);
+        
+        Vec3D center = new Vec3D(0, 0, 0);
+        Vec3D dataPoint = lc.get(j).subSelf(center).scaleSelf(1);
+                
+        //vertex(dataPoint.x, dataPoint.y, dataPoint.z);
+        
       }
       
       endShape();
-        
+      
     popMatrix();
     
   }
