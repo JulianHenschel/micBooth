@@ -57,9 +57,7 @@ class Geo {
 
       float s = 0, s_add = 10;
       float t = 0, t_add = 180/(float)this.json.size();
-      
-      println();
-      
+            
       // init arraylist for line connection
       ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
 
@@ -87,11 +85,11 @@ class Geo {
           rotateZ(radians(i+noise(thisz)));
         
           stroke(0);
-          strokeWeight(.1);
+          strokeWeight(.2);
           ellipseMode(CENTER);
           
           if( (i % 3) == 0) {
-            ellipse(0,0,radius,radius);
+            //ellipse(0,0,radius,radius);
           }
 
           JSONObject data = json.getJSONObject(keys[i]);
@@ -105,11 +103,11 @@ class Geo {
           // draw bezier curves
           float[] details = float(split(data.getString("data"), ','));
 
-          for (int x = details.length-1; x > 0; x-=2) 
+          for (int x = details.length-1; x > 0; x-=1) 
           {  
                           
             float angle = TWO_PI/(float)details.length;
-            float value = map(details[x], 0, maxVal, 0.1, 20);
+            float value = map(details[x], 0, maxVal, 0.2, 15);
                       
             Vec3D point = new Vec3D(
                                     (radius/2)*(cos(angle*x)),
@@ -117,13 +115,14 @@ class Geo {
                                     (radius/2)*(cos(angle*x))
                                     );                                    
             if(mult) {
-              strokeWeight(value*2);
+              strokeWeight(value);
               //stroke(255,0,0);
             }else {
               strokeWeight(value);
-              stroke(0);
+              
             }
             
+            stroke(0);
             gfx.point(point);
                         
           }
@@ -133,7 +132,7 @@ class Geo {
           lastz = thisz;
           
           // update radius
-          radius+=0.5;
+          radius+=0.7;
                 
         popMatrix();
 
