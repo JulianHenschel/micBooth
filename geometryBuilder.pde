@@ -54,14 +54,12 @@ class Geo {
 
       float s = 0, s_add = 10;
       float t = 0, t_add = 180/(float)this.json.size();
+      float sphereRadius = 150;
+      float radius = 80;
             
       // init arraylist for line connection
       ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
 
-      // display settings
-      float sphereRadius = 150;
-      float radius = 80;
-      
       for(int i = 0; i < this.json.size(); i+=1) 
       {
        
