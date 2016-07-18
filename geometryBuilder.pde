@@ -5,7 +5,6 @@ class Geo {
   JSONObject json;
   float maxVal = 0, maxAddVal = 0;
   String[] keys;
-  int data_length = 0;
   
   float lastx = 0; 
   float lasty = 0; 
@@ -32,9 +31,7 @@ class Geo {
 
       JSONObject data = json.getJSONObject(keys[i]);
       float[] fd_array = float(split(data.getString("data"), ','));
-      
-      this.data_length = fd_array.length;
-      
+            
       for(int j = 0; j < fd_array.length; j++) 
       {
         if(fd_array[j] > this.maxVal) 
@@ -72,6 +69,8 @@ class Geo {
           
           s += s_add;
           t += t_add;
+          
+          JSONObject data = json.getJSONObject(keys[i]);
                  
           float radianS = radians(s); 
           float radianT = radians(t);
@@ -79,24 +78,14 @@ class Geo {
           float thisx = (sphereRadius * cos(radianS) * sin(radianT)); 
           float thisy = (sphereRadius * sin(radianS) * sin(radianT)); 
           float thisz = (sphereRadius * cos(radianT));
+          
+          boolean mult = false;
         
           rotateX(radians(i+noise(thisx)));
           rotateY(radians(i+noise(thisy)));
           rotateZ(radians(i+noise(thisz)));
-        
-          stroke(0);
-          strokeWeight(.2);
-          ellipseMode(CENTER);
-          
-          if( (i % 3) == 0) {
-            //ellipse(0,0,radius,radius);
-          }
 
-          JSONObject data = json.getJSONObject(keys[i]);
-          
-          boolean mult = false;
-          
-          // save vectors to display structure
+          // if "isKick" mult=true
           if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat"))
             mult = true;
             
@@ -116,10 +105,8 @@ class Geo {
                                     );                                    
             if(mult) {
               strokeWeight(value);
-              //stroke(255,0,0);
             }else {
               strokeWeight(value);
-              
             }
             
             stroke(0);
