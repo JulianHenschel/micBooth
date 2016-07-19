@@ -56,9 +56,7 @@ class Geo {
       float t = 0, t_add = 180/(float)this.json.size();
       float sphereRadius = 150;
       float radius = 80;
-            
-      // init arraylist for line connection
-      ArrayList<Vec3D> lc = new ArrayList<Vec3D>();
+      float radius_add = random(0.3,0.8);
 
       for(int i = 0; i < this.json.size(); i+=1) 
       {
@@ -84,40 +82,46 @@ class Geo {
           rotateZ(radians(i+noise(thisz)));
 
           // if "isKick" mult=true
-          if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat"))
+          if(data.getBoolean("isKick") || data.getBoolean("isSnare") || data.getBoolean("isHat")) 
             mult = true;
             
           // draw bezier curves
           float[] details = float(split(data.getString("data"), ','));
-
+          
+          beginShape(TRIANGLES);
+          
           for (int x = details.length-1; x > 0; x-=1) 
           {  
                           
             float angle = TWO_PI/(float)details.length;
             float value = map(details[x], 0, maxVal, 0.2, 15);
                       
-            Vec3D point = new Vec3D(
-                                    (radius/2)*(cos(angle*x)),
-                                    (radius/2)*(sin(angle*x)),
-                                    (radius/2)*(cos(angle*x))
-                                    );                                    
-            if(mult) {
-              strokeWeight(value);
-            }else {
-              strokeWeight(value);
-            }
+            Vec3D point = new Vec3D((radius/2)*(cos(angle*x)), (radius/2)*(sin(angle*x)), (radius/2)*(cos(angle*x)));                                    
             
+            /*
+            if(mult) 
+            {
+              stroke(255,0,0);
+              strokeWeight(.1);
+              noFill();
+              vertex(point.x,point.y,point.z);
+            }
+            */
+            
+            strokeWeight(value);
             stroke(0);
             gfx.point(point);
                         
           }
+          
+          endShape();
         
           lastx = thisx; 
           lasty = thisy; 
           lastz = thisz;
           
           // update radius
-          radius+=0.7;
+          radius += radius_add;
                 
         popMatrix();
 
