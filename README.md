@@ -6,3 +6,4 @@ Diese Installation transferiert über ein Mikrofon eingegebene Geräusche in ein
 
 ## verwendete Bibliotheken
 - [Toxiclibs](http://toxiclibs.org)
+- [Minim](http://code.compartmental.net/tools/minim/)
