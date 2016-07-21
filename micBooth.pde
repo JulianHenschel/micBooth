@@ -32,7 +32,7 @@ PFont                font;
 
 void setup() {
   
-  size(600,800,P3D);
+  size(550,800,P3D);
   smooth();
   
   // init date

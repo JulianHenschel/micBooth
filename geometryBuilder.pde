@@ -48,15 +48,16 @@ class Geo {
     pushMatrix();
     translate(width/2, (height/2)-50, 0);
       
-      rotateY(random(0, HALF_PI)); 
-      rotateY(random(0, HALF_PI)); 
-      rotateX(random(0, HALF_PI));
+      rotateX(random(0, PI)); 
+      rotateY(random(0, PI)); 
+      rotateZ(random(0, PI));
 
       float s = 0, s_add = 10;
       float t = 0, t_add = 180/(float)this.json.size();
-      float sphereRadius = 150;
+      float sphereRadius = random(10,200);
       float radius = 80;
       float radius_add = random(0.3,0.8);
+      int mode = (int)random(0.6,3.4); 
 
       for(int i = 0; i < this.json.size(); i+=1) 
       {
@@ -95,8 +96,20 @@ class Geo {
                           
             float angle = TWO_PI/(float)details.length;
             float value = map(details[x], 0, maxVal, 0.2, 15);
-                      
-            Vec3D point = new Vec3D((radius/2)*(cos(angle*x)), (radius/2)*(sin(angle*x)), (radius/2)*(cos(angle*x)));                                    
+            
+            Vec3D point = new Vec3D();
+            
+            switch(mode) 
+            {
+              
+              case 1:
+                point = new Vec3D((radius/2)*(tan(angle*x)), (radius/2)*(sin(angle*x)), (radius/2)*(cos(angle*x))); 
+              case 2:
+                point = new Vec3D((radius/2)*(cos(angle*x)), (radius/2)*(tan(angle*x)), (radius/2)*(cos(angle*x))); 
+              case 3:
+                point = new Vec3D((radius/2)*(cos(angle*x)), (radius/2)*(sin(angle*x)), (radius/2)*(tan(angle*x)));
+            
+            }
             
             /*
             if(mult) 
