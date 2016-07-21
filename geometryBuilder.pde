@@ -95,7 +95,7 @@ class Geo {
           {  
                           
             float angle = TWO_PI/(float)details.length;
-            float value = map(details[x], 0, maxVal, 0.2, 15);
+            float value = map(details[x], 0, maxVal, 0.2, 25);
             
             Vec3D point = new Vec3D();
             
