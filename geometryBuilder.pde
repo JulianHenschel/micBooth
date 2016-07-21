@@ -56,7 +56,7 @@ class Geo {
       float t = 0, t_add = 180/(float)this.json.size();
       float sphereRadius = random(10,200);
       float radius = 80;
-      float radius_add = random(0.3,0.8);
+      float radius_add = .1;
       int mode = (int)random(0.6,3.4); 
 
       for(int i = 0; i < this.json.size(); i+=1) 
