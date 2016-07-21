@@ -3,6 +3,8 @@ import toxi.geom.*;
 import toxi.processing.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -14,6 +16,7 @@ BeatDetect           beat;
 BeatListener         bl;
 AudioRecorder        recorder;
 Geo                  geo;
+Date                 date;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -22,13 +25,18 @@ boolean              display = false;
 int                  index;
 int                  currentMillis;
 JSONObject           data;
+PShape               logo;
+PFont                font;
 
 /*------------------------------------------------------------------------------------------------------*/
 
 void setup() {
   
-  size(600,900,P3D);
+  size(600,800,P3D);
   smooth();
+  
+  // init date
+  date = new Date();
   
   // init toxiclibs
   gfx = new ToxiclibsSupport(this);
@@ -52,6 +60,16 @@ void setup() {
   // init array for data storage
   data = new JSONObject();
   
+  // load logo file
+  logo = loadShape("logo_02.svg");
+  
+  logo.disableStyle();
+  logo.setFill(0);
+  
+  // load font
+  font = createFont("Block Berthold Condensed.ttf", 90);
+  textFont(font);
+  
 }
 
 void draw() {
@@ -67,7 +85,7 @@ void draw() {
     fill(0);
     noStroke();
     textAlign(CENTER, CENTER);
-    textSize(14);
+    textSize(24);
         
     text(nf((millis()-currentMillis)/1000,2)+" Seconds", 0, height-100, width, 100);
   }
@@ -141,6 +159,23 @@ void draw() {
       PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
         
         geo.display();
+                
+        // show logo
+        noStroke();
+        fill(0);
+        shape(logo, (width/2)-15, height-60, 30, 40);
+        
+        // show date
+        SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+        
+        textMode(SHAPE);
+        textSize(8);
+        textAlign(RIGHT, CENTER);
+        text(DATE_FORMAT.format(date), 0, height-61, (width/2)-25, 40);
+        
+        // show name
+        textAlign(LEFT, CENTER);
+        text("Haldern Pop", (width/2)+25, height-61, width, 40);
       
       endRaw();
           
@@ -149,7 +184,6 @@ void draw() {
   }
   
 }
-
 
 void setNewIndex() {
   

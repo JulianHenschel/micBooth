@@ -46,7 +46,7 @@ class Geo {
     background(255);
     
     pushMatrix();
-    translate(width/2, height/2, 0);
+    translate(width/2, (height/2)-50, 0);
       
       rotateY(random(0, HALF_PI)); 
       rotateY(random(0, HALF_PI)); 
