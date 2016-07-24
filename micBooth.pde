@@ -156,7 +156,7 @@ void draw() {
   if(display) 
   {
     
-      PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".pdf"); 
+      PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/prints/"+nf(index,4)+".pdf"); 
         
         geo.display();
                 
