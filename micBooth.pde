@@ -169,13 +169,14 @@ void draw() {
         SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
         
         textMode(SHAPE);
-        textSize(8);
+        textSize(7);
+        textLeading(8);
         textAlign(RIGHT, CENTER);
-        text(DATE_FORMAT.format(date), 0, height-61, (width/2)-25, 40);
+        text(DATE_FORMAT.format(date)+"\n No. "+index, 0, height-61, (width/2)-25, 40);
         
         // show name
         textAlign(LEFT, CENTER);
-        text("Haldern Pop", (width/2)+25, height-61, width, 40);
+        text("Haldern Pop \nFestival", (width/2)+25, height-61, width, 40);
       
       endRaw();
           

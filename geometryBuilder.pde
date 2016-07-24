@@ -59,7 +59,7 @@ class Geo {
       float radius_add = .1;
       int mode = (int)random(0.6,3.4); 
 
-      for(int i = 0; i < this.json.size(); i+=1) 
+      for(int i = 0; i < this.json.size(); i++) 
       {
        
         pushMatrix();
