@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 class Geo {
   
   JSONObject json;
@@ -9,6 +7,8 @@ class Geo {
   float lastx = 0; 
   float lasty = 0; 
   float lastz = 0;
+  
+  boolean displayed = false;
   
   Geo() { }
 
@@ -20,6 +20,8 @@ class Geo {
     Arrays.sort(this.keys);
     
     this.preProcessData();
+    
+    displayed = false;
         
   }
   
@@ -141,6 +143,8 @@ class Geo {
       }
       
     popMatrix();
+    
+    displayed = true;
     
   }
   

@@ -5,6 +5,10 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Arrays;
+import cc.arduino.*;
+import org.firmata.*;
+import processing.serial.*;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -17,16 +21,18 @@ BeatListener         bl;
 AudioRecorder        recorder;
 Geo                  geo;
 Date                 date;
+Arduino              arduino;
 
 /*------------------------------------------------------------------------------------------------------*/
 
 boolean              rec = false;
-boolean              display = false;
 int                  index;
 int                  currentMillis;
+int                  ledPin = 8, buttonPin = 7, lastButtonState = 0, buttonPushCounter = 0, buttonState  = 0;
 JSONObject           data;
 PShape               logo;
 PFont                font;
+int                  seconds = 6;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -34,6 +40,15 @@ void setup() {
   
   size(550,800,P3D);
   smooth();
+  
+  // init arduino board
+  //println(Arduino.list());
+  arduino = new Arduino(this, Arduino.list()[1], 57600);
+  
+  arduino.pinMode(buttonPin, Arduino.INPUT);
+  arduino.pinMode(ledPin, Arduino.OUTPUT);
+  
+  arduino.digitalWrite(ledPin, Arduino.HIGH);
   
   // init date
   date = new Date();
@@ -69,26 +84,18 @@ void setup() {
   // load font
   font = createFont("Block Berthold Condensed.ttf", 90);
   textFont(font);
-  
+
 }
 
 void draw() {
   
   background(255);
   
+  // read arduino button
+  listenToButton();
+    
   // set title
   surface.setTitle((int(frameRate) + " fps"));
-  
-  // show time info
-  if(rec) 
-  {
-    fill(0);
-    noStroke();
-    textAlign(CENTER, CENTER);
-    textSize(24);
-        
-    text(nf((millis()-currentMillis)/1000,2)+" Seconds", 0, height-100, width, 100);
-  }
   
   // show freuqence
   pushMatrix();
@@ -121,7 +128,7 @@ void draw() {
       
       if((i % resolution) == 0) 
       {
-        if(!display)
+        if(!rec)
         {
           line(x, 0, x, 0 - fftLin.getBand(i) * smoothFactor * scale);
           line(-x, 0, -x, 0 - fftLin.getBand(i) * smoothFactor * scale);
@@ -148,16 +155,117 @@ void draw() {
       
       data.setJSONObject( nf((int)millis()-currentMillis, 5) , timer );
       
+      // stop record after x seconds
+      if( (millis()-currentMillis)/1000 > seconds ) {
+        stopRecord();
+      }
+      
+      // blink led
+      if(beat.isKick() || beat.isSnare() || beat.isHat())
+        arduino.digitalWrite(ledPin, Arduino.HIGH);
+      else
+        arduino.digitalWrite(ledPin, Arduino.LOW);
+      
+    }else {
+      arduino.digitalWrite(ledPin, Arduino.HIGH);  
     }
 
   popMatrix();
   
-  // display graphic
-  if(display) 
+}
+
+void setNewIndex() {
+  
+  // get previous id from file
+  String lines[] = loadStrings("data/index.txt");
+  int newId = parseInt(lines[0]);
+  lines[0] = str(newId+=1);
+  saveStrings("data/index.txt", lines);
+  
+  // set new id
+  index = newId;
+  
+  // create archiv folder
+  createOutput("data/archiv/"+nf(index,4)+"/.dummy");
+  
+}
+
+void listenToButton() {
+    
+  int buttonState = arduino.digitalRead(buttonPin);
+    
+  if (buttonState != lastButtonState) 
   {
     
+    buttonPushCounter++;
+    
+    if(buttonState == 1)      
+      if(buttonPushCounter%2 != 0)
+        buttonPushed();
+  }
+  
+  lastButtonState = buttonState;
+
+}
+
+void buttonPushed() {
+  
+  if(rec) {
+    
+    rec = false;
+    arduino.digitalWrite(ledPin, Arduino.HIGH);
+    
+  }else {
+    
+    rec = true;
+    println("*** start record");
+    
+    // set new index
+    setNewIndex();
+    
+    // start recording
+    currentMillis = millis();
+    
+    // init recorder object
+    recorder = minim.createRecorder(in, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".wav");
+  
+    // start recording
+    if(!recorder.isRecording())
+      recorder.beginRecord();
+    
+  }
+}
+
+void stopRecord() {
+  
+  if(rec) 
+  {
+    
+    rec = false;
+    println("*** stop record");
+
+    // save json data
+    saveJSONObject(data, "data/archiv/"+nf(index,4)+"/data.json");
+    
+    // stop and save recording
+    if(recorder.isRecording())
+    {
+      recorder.endRecord();
+      recorder.save();
+    }
+    
+    // clear data object
+    data = new JSONObject();
+    
+    // show graphic
+    geo.loadData(index);
+    
+    pushMatrix();
+    translate(-width/2, -height/2, 0);
+    
+      // save pdf
       PGraphicsPDF pdf = (PGraphicsPDF)beginRaw(PDF, "data/prints/"+nf(index,4)+".pdf"); 
-        
+    
         geo.display();
                 
         // show logo
@@ -179,83 +287,9 @@ void draw() {
         text("Haldern Pop \nFestival", (width/2)+25, height-61, width, 40);
       
       endRaw();
-          
-    noLoop();
-    
-  }
+      
+    popMatrix();
   
-}
-
-void setNewIndex() {
-  
-  // get previous id from file
-  String lines[] = loadStrings("data/index.txt");
-  int newId = parseInt(lines[0]);
-  lines[0] = str(newId+=1);
-  saveStrings("data/index.txt", lines);
-  
-  // set new id
-  index = newId;
-  
-  // create archiv folder
-  createOutput("data/archiv/"+nf(index,4)+"/.dummy");
-  
-}
-
-void mousePressed() {
-  
-  rec = true;
-  display = false;
-  
-  // set new index
-  setNewIndex();
-  
-  // start recording
-  currentMillis = millis();
-  
-  // init recorder object
-  recorder = minim.createRecorder(in, "data/archiv/"+nf(index,4)+"/"+nf(index,4)+".wav");
-  
-  // start recording
-  if(!recorder.isRecording())
-  {
-    recorder.beginRecord();
-  }
-  
-  loop();
-  
-}
-
-void mouseReleased() {
-  
-  rec = false;
-  
-  // save json data
-  saveJSONObject(data, "data/archiv/"+nf(index,4)+"/data.json");
-  
-  // stop and save recording
-  if(recorder.isRecording())
-  {
-    recorder.endRecord();
-    recorder.save();
-  }
-  
-  // clear data object
-  data = new JSONObject();
-  
-  // show graphic
-  display = true;
-  geo.loadData(index);
-  
-}
-
-/*
-void keyPressed() {
-  
-  if (key == 'n') 
-  {
-    
   }
 
 }
-*/
