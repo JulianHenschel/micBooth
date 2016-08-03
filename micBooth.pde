@@ -1,6 +1,7 @@
 import processing.pdf.*;
 import toxi.geom.*;
 import toxi.processing.*;
+import toxi.math.waves.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ AudioRecorder        recorder;
 Geo                  geo;
 Date                 date;
 Arduino              arduino;
+ButtonLight          button;
 
 /*------------------------------------------------------------------------------------------------------*/
 
@@ -40,6 +42,9 @@ void setup() {
   
   size(550,800,P3D);
   smooth();
+  
+  // init button light
+  button = new ButtonLight();
   
   // init arduino board
   //println(Arduino.list());
@@ -90,6 +95,9 @@ void setup() {
 void draw() {
   
   background(255);
+  
+  // update button
+  button.update();
   
   // read arduino button
   listenToButton();
@@ -160,14 +168,6 @@ void draw() {
         stopRecord();
       }
       
-      // blink led
-      if(beat.isKick() || beat.isSnare() || beat.isHat())
-        arduino.digitalWrite(ledPin, Arduino.HIGH);
-      else
-        arduino.digitalWrite(ledPin, Arduino.LOW);
-      
-    }else {
-      arduino.digitalWrite(ledPin, Arduino.HIGH);  
     }
 
   popMatrix();
@@ -213,12 +213,14 @@ void buttonPushed() {
   if(rec) {
     
     rec = false;
-    arduino.digitalWrite(ledPin, Arduino.HIGH);
+    button.setMode(1);
     
   }else {
     
     rec = true;
     println("*** start record");
+    
+    button.setMode(2);
     
     // set new index
     setNewIndex();
@@ -289,6 +291,8 @@ void stopRecord() {
       endRaw();
       
     popMatrix();
+    
+    button.setMode(1);
   
   }
 
